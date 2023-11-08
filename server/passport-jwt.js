@@ -13,7 +13,7 @@ const { Users } = require('./models'); // Replace with the path to your User mod
 const jwtStrategy = new JwtStrategy(options, async (jwt_payload, done) => {
   try {
 
-    const user = await Users.findOne({ id: jwt_payload.sub });
+    const user = await Users.findOne({where:{ id: jwt_payload.id }});
     if (user) {
       return done(null, user);
     } else {

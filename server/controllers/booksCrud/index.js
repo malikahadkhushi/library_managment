@@ -1,4 +1,11 @@
-const { insertBook, deletebook, checkBook, updatebook } = require('../../services/Books');
+const {
+    insertBook,
+    deletebook,
+    checkBook,
+    updatebook,
+    allBooks,
+    getbook
+} = require('../../services/Books');
 
 // Creating Book
 exports.createBook = async (req, res) => {
@@ -98,9 +105,9 @@ exports.updateBook = async (req, res) => {
 }
 
 // getBooks
-exports.getBooks = async (res, res) => {
+exports.getAllBooks = async (req, res) => {
     try {
-        const page = parseInt(req.params.ID) || 1;
+        const page = parseInt(req.params.page) || 1;
         const limit = 50;
         const offset = (page - 1) * limit;
         const para = {
@@ -120,4 +127,24 @@ exports.getBooks = async (res, res) => {
         res.status(500).json({ error: "Internal server error Check Page Number" });
     }
 
+}
+exports.getSingleBook = async (req, res) => {
+
+    let bookId = req.params.id;
+
+    try {
+
+        let book = await getbook(bookId);
+        if (!book) {
+            res.status(401).send("Book Not Found By this id");
+        }
+        else {
+            res.status(200).send(book);
+        }
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).send("Server Error");
+
+    }
 }

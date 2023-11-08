@@ -17,7 +17,6 @@ const {
 // 1. Return the number of books of n publishers in sorted order
 exports.getBooksByNpublishers = async (req, res) => {
     let publishersArray = req.body.publishers;
-
     try {
         if (publishersArray.length) {
             const publisherCounts = await booksOfNPublihser(publishersArray);

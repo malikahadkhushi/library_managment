@@ -4,23 +4,24 @@ const sequelize = require('sequelize');
 
 // insertBook
 
-exports.insertBook = (bookInfo)=>{
+exports.insertBook = (bookInfo) => {
 
     return Books.create(bookInfo);
 }
 
 // Count of N Publishers
 exports.booksOfNPublihser = (publisherIds) => {
-
-    return Books.count({
+    console.log(publisherIds)
+    return Books.findAll({
         attributes: [
-            [sequelize.literal('publisher'), 'publisher'],
-            [sequelize.fn('COUNT', sequelize.col('id')), 'count'],
+            "publisher",
+            [sequelize.fn('COUNT', sequelize.col('publisher')), 'count'],
         ],
         where: {
             publisher: publisherIds,
         },
-        group: 'publisher',
+        group: ['publisher'],
+
     });
 
 }
@@ -28,7 +29,10 @@ exports.booksOfNPublihser = (publisherIds) => {
 // Count of N Authors
 exports.booksOfNAuthor = (authorIds) => {
 
-    return Books.count({
+
+    
+
+    return Books.findAndCountAll({
         attributes: [
             [sequelize.literal('author'), 'author'],
             [sequelize.fn('COUNT', sequelize.col('id')), 'count'],
@@ -58,14 +62,16 @@ exports.booksOfNGenre = (genreIds) => {
 
 exports.booksPublishedAfterYear = (obj) => {
 
+   
+
+
     return Books.findAndCountAll({
         where: {
             publication_year: { [sequelize.Op.gt]: obj.year },
         },
-        // attributes:['title'],
+        attributes:['title'],
         limit: obj.limit,
         offset: obj.offset,
-        order: [['publication_year', 'ASC']], // Replace with your desired sorting column
     });
 
 }
@@ -130,53 +136,63 @@ exports.findBookByGenre = (info) => {
     });
 }
 
-exports.findBooksByPublisher = (info)=>{
+exports.findBooksByPublisher = (info) => {
 
-  return Books.findAndCountAll({
+    return Books.findAndCountAll({
         where: {
-          publisher:info.publisherId
+            publisher: info.publisherId
         },
         limit: info.limit,
         offset: info.offset,
         order: [['publication_year', 'ASC']], // Replace with your desired sorting column
-      });
-  
+    });
+
 }
 
 
-exports.findBooksByText = (info)=>{
+exports.findBooksByText = (info) => {
 
- return   Books.findAndCountAll({
+    return Books.findAndCountAll({
         where: {
-          title: { [sequelize.Op.iLike]: `%${info.searchText}%` }, // Case-insensitive search
+            title: { [sequelize.Op.iLike]: `%${info.searchText}%` }, // Case-insensitive search
         },
         limit: info.limit,
         offset: info.offset,
         order: [["title", "ASC"]], // Replace with your desired sorting column
-      });
+    });
 }
-
 
 // check Book
 
-exports.checkBook = (id)=>{
+exports.checkBook = (id) => {
 
-    return Books.findOne({where:{id:id}});
+    return Books.findOne({ where: { id: id } });
 
 }
 
-exports.deletebook = (bookId)=>{
+exports.deletebook = (bookId) => {
     return Books.destroy({ where: { id: bookId } });
 }
 
-exports.updatebook = (obj)=>{
+exports.updatebook = (obj) => {
 
-  return  Books.update(
+    return Books.update(
         obj.book,
         {
-          where: { id: obj.bookId },
+            where: { id: obj.bookId },
         }
-      );
+    );
 }
 
-exports
+exports.allBooks = (obj) => {
+
+    return Books.findAll({
+        limit: obj.limit,
+        offset: obj.offset
+    });
+}
+exports.getbook = (id) => {
+
+    return Books.findOne({ where: { id: id } });
+
+}

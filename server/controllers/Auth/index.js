@@ -13,13 +13,16 @@ exports.login = async (req, resp) => {
     try {
 
         let User = req.body;
-        let find = await findUser(User);
-        let match = await bcrypt.compare(User.password, find.dataValues.password);
-        
+        let userFind = await findUser(User);
+        let match = await bcrypt.compare(User.password, userFind.dataValues.password);
+        let id = userFind.dataValues.id;
+        let role = userFind.dataValues.role;
+        let user = {id , role}
+
         if (match) {
-            let token = tokenGenerator(find.dataValues);
+            let token = tokenGenerator(user);
             console.log("Token", token)
-            resp.status(201).send({ find, token });
+            resp.status(201).send(token);
         }
         
     } catch (error) {
